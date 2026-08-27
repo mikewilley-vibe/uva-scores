@@ -1,4 +1,5 @@
 import type { GameStatus, TeamSide } from "./espn";
+import { fetchEspn } from "./espn-fetch";
 
 export const HEADLINE_LEAGUES = [
   {
@@ -274,10 +275,7 @@ function pickBiggest(games: HeadlineGame[], limit: number, now: number) {
 
 async function fetchLeague(league: (typeof HEADLINE_LEAGUES)[number]): Promise<HeadlineGame[]> {
   const url = `https://site.api.espn.com/apis/site/v2/sports/${league.path}/scoreboard${league.query ? `?${league.query}` : ""}`;
-  const response = await fetch(url, {
-    next: { revalidate: 60 },
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchEspn(url);
 
   if (!response.ok) {
     throw new Error(`Could not load ${league.label} scoreboard (${response.status})`);

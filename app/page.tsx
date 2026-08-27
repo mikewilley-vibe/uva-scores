@@ -5,6 +5,8 @@ import { SportNav } from "@/components/SportNav";
 import { getUvaSchedules } from "@/lib/espn";
 import { getHeadlineGames } from "@/lib/headlines";
 
+export const dynamic = "force-dynamic";
+
 export default async function Home() {
   const [schedules, headlines] = await Promise.all([
     getUvaSchedules(),

@@ -1,4 +1,5 @@
 import { SPORTS, type Sport, type SportId } from "./sports";
+import { fetchEspn } from "./espn-fetch";
 
 export type TeamSide = {
   id: string;
@@ -170,10 +171,7 @@ function parseEvent(event: EspnEvent, sport: Sport): Game | null {
 
 async function fetchSchedule(sport: Sport, season: number): Promise<Game[]> {
   const url = `https://site.api.espn.com/apis/site/v2/sports/${sport.path}/teams/${sport.teamId}/schedule?season=${season}`;
-  const response = await fetch(url, {
-    next: { revalidate: 120 },
-    headers: { Accept: "application/json" },
-  });
+  const response = await fetchEspn(url);
 
   if (!response.ok) {
     throw new Error(`Could not load UVA ${sport.label} schedule (${response.status})`);
