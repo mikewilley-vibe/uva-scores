@@ -1,0 +1,27 @@
+@import "tailwindcss";
+
+:root {
+  --background: #f4efe6;
+  --foreground: #232d4b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-uva-navy: #232d4b;
+  --color-uva-orange: #e57200;
+  --font-sans: var(--font-libre);
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+}
+
+.headline-scroll {
+  scrollbar-width: none;
+}
+
+.headline-scroll::-webkit-scrollbar {
+  display: none;
+}
