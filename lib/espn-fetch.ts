@@ -6,8 +6,18 @@ const ESPN_HEADERS = {
 };
 
 export async function fetchEspn(url: string) {
-  return fetch(url, {
-    cache: "no-store",
+  const response = await fetch(url, {
+    next: { revalidate: 60 },
+    headers: ESPN_HEADERS,
+  });
+
+  if (response.ok) return response;
+
+  const fallbackUrl = url.replace("site.api.espn.com", "site.web.api.espn.com");
+  if (fallbackUrl === url) return response;
+
+  return fetch(fallbackUrl, {
+    next: { revalidate: 60 },
     headers: ESPN_HEADERS,
   });
 }

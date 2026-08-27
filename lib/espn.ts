@@ -199,6 +199,9 @@ async function getSportSchedule(sport: Sport): Promise<SportSchedule> {
   }
 
   const games = [...gamesById.values()];
+  if (games.length === 0 && seasons.every((result) => result.status === "rejected")) {
+    throw new Error(`Could not load UVA ${sport.label} schedule`);
+  }
   const upcoming = games
     .filter((game) => game.status !== "final")
     .sort((a, b) => {
@@ -216,5 +219,21 @@ async function getSportSchedule(sport: Sport): Promise<SportSchedule> {
 }
 
 export async function getUvaSchedules(): Promise<SportSchedule[]> {
-  return Promise.all(SPORTS.map((sport) => getSportSchedule(sport)));
+  const results = await Promise.allSettled(SPORTS.map((sport) => getSportSchedule(sport)));
+  const schedules = results.map((result, index) => {
+    if (result.status === "fulfilled") return result.value;
+    return { sport: SPORTS[index], upcoming: [], recent: [] };
+  });
+
+  if (
+    results.every((result) => result.status === "rejected") ||
+    schedules.every((schedule) => schedule.upcoming.length === 0 && schedule.recent.length === 0)
+  ) {
+    const firstError = results.find((result) => result.status === "rejected");
+    throw firstError && firstError.status === "rejected"
+      ? firstError.reason
+      : new Error("Could not load UVA schedules");
+  }
+
+  return schedules;
 }
